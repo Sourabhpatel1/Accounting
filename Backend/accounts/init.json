@@ -1,0 +1,128 @@
+{   
+    "Group Accounts" : [
+        {
+            "id" : 1,
+            "name" : "Owners Capital",
+            "primary_account_id" : 1
+        },
+        {
+            "id" : 2,
+            "name" : "Long Term Loans",
+            "primary_account_id" : 2
+        },
+        {
+            "id" : 3,
+            "name" : "Short Term Loans",
+            "primary_account_id" : 2
+        },
+        {
+            "id" : 4,
+            "name" : "Current Liabilities",
+            "primary_account_id" : 2
+        },
+        {
+            "id" : 5,
+            "name" : "Creditors",
+            "primary_account_id" : 2
+        },
+        {
+            "id" : 6,
+            "name" : "Unpaid Duties and Taxes",
+            "primary_account_id" : 2
+        },
+        {
+            "id" : 7,
+            "name" : "Lands and Buildings",
+            "primary_account_id" : 3
+        },
+        {
+            "id" : 8,
+            "name" : "Plants and Machinary",
+            "primary_account_id" : 3
+        },
+        {
+            "id" : 9,
+            "name" : "Loand and Advances",
+            "primary_account_id" : 3
+        },
+        {
+            "id" : 10,
+            "name" : "Prepaid Taxes and Duties",
+            "primary_account_id" : 3
+        },
+        {
+            "id" : 11,
+            "name" : "Current Assets",
+            "primary_account_id" : 3
+        },
+        {
+            "id" : 12,
+            "name" : "Debtors",
+            "primary_account_id" : 3
+        },
+        {
+            "id" : 13,
+            "name" : "Inventory",
+            "primary_account_id" : 3
+        },        
+        {
+            "id" : 14,
+            "name" : "Direct Expenses",
+            "primary_account_id" : 4
+        },
+        {
+            "id" : 15,
+            "name" : "Indirect Expenses",
+            "primary_account_id" : 4
+        },
+        {
+            "id" : 16,
+            "name" : "Direct income",
+            "primary_account_id" : 5
+        },
+        {
+            "id" : 17,
+            "name" : "Indirect Income",
+            "primary_account_id" : 5
+        }
+    ],
+
+    "Accounts" : [
+        {
+            "name" : "Capital",
+            "group_account_id" : 1
+        },
+        {
+            "name" : "Raw Materials",
+            "group_account_id" : 13
+        },
+        {
+            "name" : "Semi-Finished Materials",
+            "group_account_id" : 13
+        },
+        {
+            "name" : "Finished Materials",
+            "group_account_id" : 13
+        },
+        {
+            "name" : "Cash",
+            "group_account_id" : 11
+        },
+        {
+            "name" : "Bank",
+            "group_account_id" : 11
+        },
+        {
+            "name" : "COGS",
+            "group_account_id" : 14
+        },
+        {
+            "name" : "Expense",
+            "group_account_id" : 15
+        },
+        {
+            "name" : "Sales",
+            "group_account_id" : 16
+        }
+    ]
+}

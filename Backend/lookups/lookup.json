@@ -1,0 +1,92 @@
+{
+    "primary_accounts" : [
+        {
+            "id" : 1,
+            "name" : "Capital Accounts"
+        },
+        {
+            "id" : 2,
+            "name" : "Liabilities Accounts"
+        },
+        {
+            "id" : 3,
+            "name" : "Assets Accounts"
+        },
+        {
+            "id" : 4,
+            "name" : "Expenses Accounts"
+        },
+        {
+            "id" : 5,
+            "name" : "Revenue Accounts"
+        }
+    ],
+    "transaction_type" : [
+        {
+            "id" : 1,
+            "name" : "Cash"
+        },
+        {
+            "id" : 2,
+            "name" : "Bank"
+        },
+        {
+            "id" : 3,
+            "name" : "Credit"
+        }
+    ],
+    "entry_type" : [
+        {
+            "id" : 1,
+            "name" : "Debit"
+        },
+        {
+            "id" : 2,
+            "name" : "Credit"
+        }
+    ],
+    "inventory_type" : [
+        {
+            "id" : 1,
+            "name" : "Sale"
+        },
+        {
+            "id" : 2,
+            "name" : "Consumables"
+        }
+    ],
+    "unit" : [
+        {
+            "id" : 1,
+            "name" : "No."
+        },
+        {
+            "id" : 2,
+            "name" : "Kilo Grams"
+        },
+        {
+            "id" : 3,
+            "name" : "Grams"
+        },
+        {
+            "id" : 4,
+            "name" : "Liters"
+        },
+        {
+            "id" : 5,
+            "name" : "Feet"
+        },
+        {
+            "id" : 6,
+            "name" : "Meters"
+        },
+        {
+            "id" : 7,
+            "name" : "Sq. Feet"
+        },
+        {
+            "id" : 8,
+            "name" : "Sq. Meters"
+        }
+    ]
+}
