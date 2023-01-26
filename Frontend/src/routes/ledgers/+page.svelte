@@ -170,14 +170,14 @@
                 <span>{entry.accountName}</span>
                 <span>{entry.documentType}</span>
                 <span>{entry.documentNo}</span>
-                <span>{entry.drAmount}</span>
-                <span>{entry.crAmount}</span>
+                <span>{parseFloat(entry.drAmount).toFixed(2)==='NaN'?'-':parseFloat(entry.drAmount).toFixed(2)}</span>
+                <span>{parseFloat(entry.crAmount).toFixed(2)==='NaN'?'-':parseFloat(entry.crAmount).toFixed(2)}</span>
             </div>
         {/each}
         {#if ledgerEntries.length > 0}
             <div class="footer">
                 <span class="bal">Balance</span>
-                <span>{balance}</span>
+                <span>{balance.toFixed(2)}</span>
                 <span>{balanceType}</span>
             </div>
         {/if}

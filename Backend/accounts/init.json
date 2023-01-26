@@ -1,4 +1,27 @@
-{   
+{
+    "PrimaryAccounts" : [
+        {
+            "id" : 1,
+            "name" : "Equity"
+        },
+        {
+            "id" : 2,
+            "name" : "Liabilities"
+        },
+        {
+            "id" : 3,
+            "name" : "Assets"
+        },
+        {
+            "id" : 4,
+            "name" : "Expenses"
+        },
+        {
+            "id" : 5,
+            "name" : "Revenue"
+        }
+    ],
+
     "Group Accounts" : [
         {
             "id" : 1,
@@ -7,122 +30,113 @@
         },
         {
             "id" : 2,
-            "name" : "Long Term Loans",
+            "name" : "Long Term Liabilities",
             "primary_account_id" : 2
         },
         {
             "id" : 3,
-            "name" : "Short Term Loans",
-            "primary_account_id" : 2
-        },
-        {
-            "id" : 4,
             "name" : "Current Liabilities",
             "primary_account_id" : 2
         },
         {
+            "id" : 4,
+            "name" : "Fixed Assets",
+            "primary_account_id" : 3
+        },
+        {
             "id" : 5,
-            "name" : "Creditors",
-            "primary_account_id" : 2
-        },
-        {
-            "id" : 6,
-            "name" : "Unpaid Duties and Taxes",
-            "primary_account_id" : 2
-        },
-        {
-            "id" : 7,
-            "name" : "Lands and Buildings",
-            "primary_account_id" : 3
-        },
-        {
-            "id" : 8,
-            "name" : "Plants and Machinary",
-            "primary_account_id" : 3
-        },
-        {
-            "id" : 9,
-            "name" : "Loand and Advances",
-            "primary_account_id" : 3
-        },
-        {
-            "id" : 10,
-            "name" : "Prepaid Taxes and Duties",
-            "primary_account_id" : 3
-        },
-        {
-            "id" : 11,
             "name" : "Current Assets",
             "primary_account_id" : 3
         },
         {
-            "id" : 12,
-            "name" : "Debtors",
-            "primary_account_id" : 3
-        },
-        {
-            "id" : 13,
-            "name" : "Inventory",
-            "primary_account_id" : 3
-        },        
-        {
-            "id" : 14,
+            "id" : 6,
             "name" : "Direct Expenses",
             "primary_account_id" : 4
         },
         {
-            "id" : 15,
+            "id" : 7,
             "name" : "Indirect Expenses",
             "primary_account_id" : 4
         },
         {
-            "id" : 16,
-            "name" : "Direct income",
+            "id" : 8,
+            "name" : "Direct Income",
             "primary_account_id" : 5
         },
         {
-            "id" : 17,
-            "name" : "Indirect Income",
+            "id" : 9,
+            "name" : "Indirect Revenue",
             "primary_account_id" : 5
         }
     ],
-
     "Accounts" : [
         {
-            "name" : "Capital",
-            "group_account_id" : 1
+            "name" : "Sundry Creditors",
+            "group_account_id" : 3
         },
         {
+            "name" : "Cash in Hand",
+            "group_account_id" : 5
+        },
+        {
+            "name" : "Bank Account",
+            "group_account_id" : 5
+        },
+        {
+            "name" : "Sundry Debtors",
+            "group_account_id" : 5
+        },
+        {   
             "name" : "Raw Materials",
-            "group_account_id" : 13
+            "group_account_id" : 5
         },
         {
-            "name" : "Semi-Finished Materials",
-            "group_account_id" : 13
+            "name" : "Semi-finished Goods",
+            "group_account_id" : 5
         },
         {
-            "name" : "Finished Materials",
-            "group_account_id" : 13
+            "name" : "Finished Goods",
+            "group_account_id" : 5
         },
         {
-            "name" : "Cash",
-            "group_account_id" : 11
+            "name" : "Consumable Stores",
+            "group_account_id" : 5
         },
         {
-            "name" : "Bank",
-            "group_account_id" : 11
+            "name" : "Cost of Goods Sold",
+            "group_account_id" : 6
         },
         {
-            "name" : "COGS",
-            "group_account_id" : 14
+            "name" : "Sales Revenue",
+            "group_account_id" : 8
         },
         {
-            "name" : "Expense",
-            "group_account_id" : 15
+            "name" : "Discount Received",
+            "group_account_id" : 8
         },
         {
-            "name" : "Sales",
-            "group_account_id" : 16
+            "name" : "Discount Given",
+            "group_account_id" : 6
+        },
+        {
+            "name" : "GST-output",
+            "group_account_id" : 3
+        },
+        {
+            "name" : "GST-input",
+            "group_account_id" : 5
+        },
+        {
+            "name" : "IGST-output",
+            "group_account_id" : 3
+        },
+        {
+            "name" : "IGST-input",
+            "group_account_id" : 5
+        },
+        {
+            "name" : "GST-Paid",
+            "group_account_id" : 6
         }
     ]
 }

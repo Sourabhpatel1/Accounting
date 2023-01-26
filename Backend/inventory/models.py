@@ -19,14 +19,19 @@ class InventoryItem(InventoryItemBase, table=True):
     type:"InventoryType" = Relationship(back_populates='items')
     unit:"Unit" = Relationship(back_populates='items')
     account:"Accounts" = Relationship(back_populates='items')
-    sale_line_items:"SaleLineItems" = Relationship(back_populates='inventory')
-    purchase_line_items:"PurchaseLineItems" = Relationship(back_populates='inventory')
+    sale_line_items:Optional[List["SaleLineItems"]] = Relationship(back_populates='inventory')
+    purchase_line_items:Optional[List["PurchaseLineItems"]] = Relationship(back_populates='inventory')
     
 
 class LineItemBase(SQLModel):
     quantity:float
     price:float
     inventory_id:int = Field(foreign_key='inventoryitem.id')
+    discount_rate:Optional[float]
+    discount_amount:Optional[float]
+    gst_rate:Optional[float]
+    gst_amount:Optional[float]
+    total:Optional[float]
 
 class SaleStockLink(SQLModel, table=True):
     stock_id:Optional[int] = Field(default=None, foreign_key='stock.id', primary_key=True)

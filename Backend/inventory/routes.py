@@ -20,6 +20,11 @@ def add_new_inventory_item(inv:InventoryItemBase, session:Session=Depends(get_se
 def read_all_inventory(session:Session=Depends(get_session)):
     return session.exec(select(InventoryItem)).all()
 
+@inv_route.get("/sales_items")
+def read_all_sales_inventory(session:Session=Depends(get_session)):
+    inventory = session.exec(select(InventoryItem).where(InventoryItem.type_id == 1)).all()
+    return inventory
+
 @inv_route.get("/{id}")
 def read_inventory_by_id(id:int, session:Session=Depends(get_session)):
     item = session.get(InventoryItem, id)
@@ -29,4 +34,3 @@ def read_inventory_by_id(id:int, session:Session=Depends(get_session)):
             detail=f"Inventory Item with id {id} does not exist."
         )
     return item
-    

@@ -5,6 +5,27 @@
     export let data;
 
     let current = 'new'
+    let save;
+
+    const refetchData = async ()=>{
+        const purchaseRes = await fetch('http://127.0.0.1:8000/doc/purchase')
+        const inventoryRes = await fetch('http://127.0.0.1:8000/inv')
+        const unitsRes = await fetch('http://127.0.0.1:8000/lookup/unit')
+        const transactionRes = await fetch('http://127.0.0.1:8000/lookup/transaction')
+        const inventoryTypeRes = await fetch('http://127.0.0.1:8000/lookup/inventory')
+        const vendorsRes = await fetch('http://127.0.0.1:8000/ven/')
+        if (purchaseRes.ok && inventoryRes.ok && unitsRes.ok && transactionRes.ok && inventoryTypeRes.ok && vendorsRes.ok) {
+            data = {
+                invoices : await purchaseRes.json(),
+                inventory : await inventoryRes.json(),
+                units : await unitsRes.json(),
+                transactionTypes : await transactionRes.json(),
+                inventoryTypes : await inventoryTypeRes.json(),
+                vendors : await vendorsRes.json()
+            }
+        } 
+    }
+
 </script>
 
 <main>
@@ -15,16 +36,16 @@
         </div>
         <div class="save">
             {#if current === 'new'}
-                <button>+ Save</button> 
+                <button on:click={async ()=>{await save()}}>+ Save</button> 
             {/if}
         </div>
     </nav>
     <div class="content">
         {#key data}
             {#if current === 'new'}
-                <New {data}/>
+                <New {data} bind:submitInvoice={save} on:save={()=>{refetchData()}}/>
             {:else}
-                <View {data}/>
+                <View invoices={data.invoices}/>
             {/if}
         {/key}
     </div>
