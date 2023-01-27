@@ -15,8 +15,9 @@
     let transactionTypeError;
     let rowErrorList = []
     let items = data.inventory.filter(inv=>{
-        return inv.type_id == 1
+        return inv.item.type_id == 1
     })
+    console.log(items)
     let fistRow = {
         sr : 1,
         name : '',
@@ -39,8 +40,8 @@
     }
 
     const setUnit = (e, row)=>{
-        itemId = items.filter(item=>item.name === e.target.value)[0].id
-        let unitId = data.inventory.filter(item=>item.name === e.target.value)[0].unit_id
+        itemId = items.filter(item=>item.item.name === e.target.value)[0].item.id
+        let unitId = items.filter(item=>item.item.name === e.target.value)[0].item.unit_id
         let unitName = data.units.filter(unit=> unit.id === unitId)[0].name
         row.name = e.target.value
         row.unit = unitName
@@ -91,16 +92,17 @@
         }
         let items = []
         rows.forEach(row=>{
+            console.log(row)
             if (!row.quantity || !row.price || !row.inventory_id) {
                 rowErrorList = [...rowErrorList, row.sr]
                 return
             }
             let newItem = {
-                quantity : row.quantity,
-                price : row.price,
-                inventory_id : row.inventory_id,
-                gst_rate : row.gst_rate || 0,
-                discount_rate : row.discount_rate || 0
+                quantity : Number(row.quantity),
+                price : Number(row.price),
+                inventory_id : Number(row.inventory_id),
+                gst_rate : Number(row.gst_rate) || 0,
+                discount_rate : Number(row.discount_rate) || 0
             }
             items = [...items, newItem]
         })
@@ -178,7 +180,7 @@
                 <input type="text" name="item-name" id="item-name" placeholder="Item Name" value="{row.name}" list="items" on:change={(e)=>{setUnit(e, row)}}>
                 <datalist id="items">
                     {#each items as item}
-                        <option value="{item.name}">{item.name}</option>
+                        <option value="{item.item.name}">{item.item.name}</option>
                     {/each}
                 </datalist>
                 <span>{row.unit}</span>

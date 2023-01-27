@@ -37,8 +37,8 @@
     }
 
     const setUnit = (e, row)=>{
-        itemId = data.inventory.filter(item=>item.name === e.target.value)[0].id
-        let unitId = data.inventory.filter(item=>item.name === e.target.value)[0].unit_id
+        itemId = data.inventory.filter(item=>item.item.name === e.target.value)[0].item.id
+        let unitId = data.inventory.filter(item=>item.item.name === e.target.value)[0].item.unit_id
         let unitName = data.units.filter(unit=> unit.id === unitId)[0].name
         row.name = e.target.value
         row.unit = unitName
@@ -93,11 +93,11 @@
                 return
             }
             let newItem = {
-                quantity : row.quantity,
-                price : row.price,
-                inventory_id : row.inventory_id,
-                gst_rate : row.gst_rate || 0,
-                discount_rate : row.discount_rate || 0
+                quantity : Number(row.quantity),
+                price : Number(row.price),
+                inventory_id : Number(row.inventory_id),
+                gst_rate : Number(row.gst_rate) || 0,
+                discount_rate : Number(row.discount_rate) || 0
             }
             items = [...items, newItem]
         })
@@ -105,7 +105,6 @@
             console.log(rowErrorList)
             return
         }
-        console.log(items)
         const invoiceRes = await fetch('http://127.0.0.1:8000/doc/purchase', {
             method : 'POST',
             mode : 'cors',
@@ -143,7 +142,7 @@
                 <label for="type">Transaction Type</label>
                 <select name="type" id="type" bind:value={transactionType}>
                     {#each data.transactionTypes as type}
-                    <option value="{type.id}">{type.name}</option>
+                        <option value="{type.id}">{type.name}</option>
                     {/each}
                 </select>
             </div>
@@ -152,7 +151,7 @@
                 <input id="vendor" name="vendor" list="vendors" autocomplete="off" placeholder="Vendor Name" on:change={(e)=>{setVendorId(e)}}/>
                 <datalist id="vendors">
                     {#each data.vendors as vendor}
-                    <option value="{vendor.name}">{vendor.name}</option>
+                        <option value="{vendor.name}">{vendor.name}</option>
                     {/each}
                 </datalist>
             </div>
@@ -177,7 +176,7 @@
                     <input type="text" name="item-name" id="item-name" placeholder="Item Name" value="{row.name}" list="items" on:change={(e)=>{setUnit(e, row)}}>
                     <datalist id="items">
                         {#each data.inventory as item}
-                        <option value="{item.name}">{item.name}</option>
+                            <option value="{item.item.name}">{item.item.name}</option>
                         {/each}
                     </datalist>
                     <span>{row.unit}</span>

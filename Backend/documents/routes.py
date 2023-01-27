@@ -996,6 +996,65 @@ def test_sale(invoice:SalesInvoiceBase, items:List[LineItemBase], session:Sessio
                 detail=f"Not enough inventory of item {inventory.name} for the specified sale quantity"
             )
 
+        #Sale Entry
+        dr_sale_entry = DebitEntry(
+            account_id=dr_sale_account.id,
+            account=dr_sale_account,
+            amount=total_after_discount,
+            sales_invoice_id=new_sales_invoice.id,
+            sales_invoice=new_sales_invoice
+        )
+        cr_sale_entry = CreditEntry(
+            account_id=sales_revenue_account.id,
+            account=sales_revenue_account,
+            amount=total_after_discount,
+            sales_invoice_id=new_sales_invoice.id,
+            sales_invoice=new_sales_invoice
+        )
+        dr_sale_entry.cr_entries.append(cr_sale_entry)
+        session.add(dr_sale_entry)
+        session.add(cr_sale_entry)
+        
+        #Discount Entry
+        if not item.discount_amount == 0:
+            dr_discount_entry = DebitEntry(
+                account_id=discount_account.id,
+                account=discount_account,
+                amount=discount_amount,
+                sales_invoice_id=new_sales_invoice.id,
+                sales_invoice=new_sales_invoice
+            )
+            cr_discount_entry = CreditEntry(
+                account_id=sales_revenue_account.id,
+                account=sales_revenue_account,
+                amount=discount_amount,
+                sales_invoice_id=new_sales_invoice.id,
+                sales_invoice=new_sales_invoice
+            )
+            dr_discount_entry.cr_entries.append(cr_discount_entry)
+            session.add(dr_discount_entry)
+            session.add(cr_discount_entry)
+        
+        #GST Entry
+        if not gst_amount == 0:
+            dr_gst_entry = DebitEntry(
+                account_id=dr_sale_account.id,
+                account=dr_sale_account,
+                amount=gst_amount,
+                sales_invoice_id=new_sales_invoice.id,
+                sales_invoice=new_sales_invoice
+            )
+            cr_gst_entry = CreditEntry(
+                account_id=gst_account.id,
+                account=gst_account,
+                amount=gst_amount,
+                sales_invoice_id=new_sales_invoice.id,
+                sales_invoice=new_sales_invoice
+            )
+            dr_gst_entry.cr_entries.append(cr_gst_entry)
+            session.add(dr_gst_entry)
+            session.add(cr_gst_entry)
+            
         # Inventory Management
         sale_quantity = item.quantity
 
@@ -1006,21 +1065,8 @@ def test_sale(invoice:SalesInvoiceBase, items:List[LineItemBase], session:Sessio
                 if sale_quantity <= stock.quantity:
                     stock.sale_line_items.append(new_sale_line_item)
                     stock.quantity -= sale_quantity
-                    #Sale Entry
-                    dr_sale_entry = DebitEntry(
-                        account_id=dr_sale_account.id,
-                        account=dr_sale_account,
-                        amount=total_after_discount,
-                        sales_invoice_id=new_sales_invoice.id,
-                        sales_invoice=new_sales_invoice
-                    )
-                    cr_sale_entry = CreditEntry(
-                        account_id=sales_revenue_account.id,
-                        account=sales_revenue_account,
-                        amount=total_after_discount,
-                        sales_invoice_id=new_sales_invoice.id,
-                        sales_invoice=new_sales_invoice
-                    )
+                    
+                    #COST ENTRY
                     dr_cost_entry = DebitEntry(
                         account_id=cost_account.id,
                         account=cost_account,
@@ -1035,74 +1081,15 @@ def test_sale(invoice:SalesInvoiceBase, items:List[LineItemBase], session:Sessio
                         sales_invoice_id=new_sales_invoice.id,
                         sales_invoice=new_sales_invoice
                     )
-                    dr_sale_entry.cr_entries.append(cr_sale_entry)
                     dr_cost_entry.cr_entries.append(cr_cost_entry)
-                    session.add(dr_sale_entry)
                     session.add(dr_cost_entry)
-                    session.add(cr_sale_entry)
                     session.add(cr_cost_entry)
-                    
-                    #Discount Entry
-                    if not item.discount_amount == 0:
-                        dr_discount_entry = DebitEntry(
-                            account_id=discount_account.id,
-                            account=discount_account,
-                            amount=discount_amount,
-                            sales_invoice_id=new_sales_invoice.id,
-                            sales_invoice=new_sales_invoice
-                        )
-                        cr_discount_entry = CreditEntry(
-                            account_id=sales_revenue_account.id,
-                            account=sales_revenue_account,
-                            amount=discount_amount,
-                            sales_invoice_id=new_sales_invoice.id,
-                            sales_invoice=new_sales_invoice
-                        )
-                        dr_discount_entry.cr_entries.append(cr_discount_entry)
-                        session.add(dr_discount_entry)
-                        session.add(cr_discount_entry)
-                    
-                    #GST Entry
-                    if not gst_amount == 0:
-                        dr_gst_entry = DebitEntry(
-                            account_id=dr_sale_account.id,
-                            account=dr_sale_account,
-                            amount=gst_amount,
-                            sales_invoice_id=new_sales_invoice.id,
-                            sales_invoice=new_sales_invoice
-                        )
-                        cr_gst_entry = CreditEntry(
-                            account_id=gst_account.id,
-                            account=gst_account,
-                            amount=gst_amount,
-                            sales_invoice_id=new_sales_invoice.id,
-                            sales_invoice=new_sales_invoice
-                        )
-                        dr_gst_entry.cr_entries.append(cr_gst_entry)
-                        session.add(dr_gst_entry)
-                        session.add(cr_gst_entry)
-
-                    item_total += sale_quantity * item.price
                     sale_quantity = 0
                     session.add(stock)
                 else:
                     stock.sale_line_items.append(new_sale_line_item)
                     sale_quantity -= stock.quantity
                     #Sale Entry
-                    dr_sale_entry = DebitEntry(
-                        account_id=dr_sale_account.id,
-                        account=dr_sale_account,
-                        amount=total_after_discount,
-                        sales_invoice_id=new_sales_invoice.id,
-                        sales_invoice=new_sales_invoice
-                    )
-                    cr_sale_entry = CreditEntry(
-                        account_id=sales_revenue_account.id,
-                        account=sales_revenue_account,
-                        amount=total_after_discount,
-                        sales_invoice_id=new_sales_invoice.id,
-                        sales_invoice=new_sales_invoice
-                    )
                     dr_cost_entry = DebitEntry(
                         account_id=cost_account.id,
                         account=cost_account,
@@ -1117,53 +1104,10 @@ def test_sale(invoice:SalesInvoiceBase, items:List[LineItemBase], session:Sessio
                         sales_invoice_id=new_sales_invoice.id,
                         sales_invoice=new_sales_invoice
                     )
-                    dr_sale_entry.cr_entries.append(cr_sale_entry)
                     dr_cost_entry.cr_entries.append(cr_cost_entry)
-                    session.add(dr_sale_entry)
                     session.add(dr_cost_entry)
-                    session.add(cr_sale_entry)
                     session.add(cr_cost_entry)
-                    
-                    #Discount Entry
-                    if not item.discount_amount == 0:
-                        dr_discount_entry = DebitEntry(
-                            account_id=discount_account.id,
-                            account=discount_account,
-                            amount=discount_amount,
-                            sales_invoice_id=new_sales_invoice.id,
-                            sales_invoice=new_sales_invoice
-                        )
-                        cr_discount_entry = CreditEntry(
-                            account_id=sales_revenue_account.id,
-                            account=sales_revenue_account,
-                            amount=discount_amount,
-                            sales_invoice_id=new_sales_invoice.id,
-                            sales_invoice=new_sales_invoice
-                        )
-                        dr_discount_entry.cr_entries.append(cr_discount_entry)
-                        session.add(dr_discount_entry)
-                        session.add(cr_discount_entry)
-                    
-                    #GST Entry
-                    if not gst_amount == 0:
-                        dr_gst_entry = DebitEntry(
-                            account_id=dr_sale_account.id,
-                            account=dr_sale_account,
-                            amount=gst_amount,
-                            sales_invoice_id=new_sales_invoice.id,
-                            sales_invoice=new_sales_invoice
-                        )
-                        cr_gst_entry = CreditEntry(
-                            account_id=gst_account.id,
-                            account=gst_account,
-                            amount=gst_amount,
-                            sales_invoice_id=new_sales_invoice.id,
-                            sales_invoice=new_sales_invoice
-                        )
-                        dr_gst_entry.cr_entries.append(cr_gst_entry)
-                        session.add(dr_gst_entry)
-                        session.add(cr_gst_entry)
-                    item_total += stock.quantity * item.price
+
                     stock.quantity = 0
                     session.add(stock)
         
