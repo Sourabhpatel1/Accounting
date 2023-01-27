@@ -18,7 +18,16 @@ def add_new_inventory_item(inv:InventoryItemBase, session:Session=Depends(get_se
 
 @inv_route.get("/")
 def read_all_inventory(session:Session=Depends(get_session)):
-    return session.exec(select(InventoryItem)).all()
+    inventories = session.exec(select(InventoryItem)).all()
+    return [
+        {
+            'item' : inventory,
+            'stock' : [{
+                        'quantity' : item.stock.quantity,
+                        'date_purchased' : item.stock.date
+                       } for item in inventory.purchase_line_items]
+        } for inventory in inventories
+    ]
 
 @inv_route.get("/sales_items")
 def read_all_sales_inventory(session:Session=Depends(get_session)):

@@ -5,16 +5,18 @@
 
     export let data;
 
-    let vendorId;
+    let customerId;
     let transactionType;
     let itemId
     let today = new Date().toJSON().slice(0,10);
 
     let dateError;
-    let vendorError;
+    let customerError;
     let transactionTypeError;
     let rowErrorList = []
-
+    let items = data.inventory.filter(inv=>{
+        return inv.type_id == 1
+    })
     let fistRow = {
         sr : 1,
         name : '',
@@ -30,14 +32,14 @@
     }
     let rows = [{...fistRow}]
 
-    const setVendorId = (e)=>{
-        vendorId = ''
-        let vendor = data.vendors.filter(v=>v.name === e.target.value)[0]
-        vendor?vendorId = vendor.id:''
+    const setCustomerId = (e)=>{
+        customerId = ''
+        let customer = data.customers.filter(c=>c.name === e.target.value)[0] || ''
+        customer?customerId=customer.id:''
     }
 
     const setUnit = (e, row)=>{
-        itemId = data.inventory.filter(item=>item.name === e.target.value)[0].id
+        itemId = items.filter(item=>item.name === e.target.value)[0].id
         let unitId = data.inventory.filter(item=>item.name === e.target.value)[0].unit_id
         let unitName = data.units.filter(unit=> unit.id === unitId)[0].name
         row.name = e.target.value
@@ -64,27 +66,28 @@
         rows = newRow
     }
     export const submitInvoice = async () => {
+        console.log(customerId)
         dateError = false;
-        vendorError = false;
+        customerError = false;
         transactionTypeError = false;
         rowErrorList = []
         if (!today) {
             dateError = true;
         }
-        if (!vendorId) {
-            vendorError = true;
+        if (!customerId) {
+            customerError = true;
         }
         if (!transactionType) {
             transactionTypeError = true;
         }
-        if (dateError || vendorError || transactionTypeError) {
+        if (dateError || customerError || transactionTypeError) {
             return
         }
         let invoice = {
-            'doc_type' : 'Purchase',
+            'doc_type' : 'Sales',
             'doc_date' : today,
             'transaction_type_id' : transactionType,
-            'vendor_id' : vendorId
+            'customer_id' : customerId
         }
         let items = []
         rows.forEach(row=>{
@@ -102,11 +105,9 @@
             items = [...items, newItem]
         })
         if (rowErrorList.length > 0) {
-            console.log(rowErrorList)
             return
         }
-        console.log(items)
-        const invoiceRes = await fetch('http://127.0.0.1:8000/doc/purchase', {
+        const invoiceRes = await fetch('http://127.0.0.1:8000/doc/sale', {
             method : 'POST',
             mode : 'cors',
             headers : {
@@ -130,11 +131,11 @@
 <main>
     <div class="invoice">
         <div class="header">
-            <span>Purchase Invoice #</span>
+            <span>Sales Invoice #</span>
             <span>{data.invoices.length + 1}</span>
         </div>
         {#key data}
-        <div class="purchase-info">
+        <div class="sales-info">
             <div class="group {dateError?'error':''}">
                 <label for="date">Date</label>
                 <input type="date" name="date" id="date" bind:value={today}>
@@ -143,16 +144,16 @@
                 <label for="type">Transaction Type</label>
                 <select name="type" id="type" bind:value={transactionType}>
                     {#each data.transactionTypes as type}
-                    <option value="{type.id}">{type.name}</option>
+                        <option value="{type.id}">{type.name}</option>
                     {/each}
                 </select>
             </div>
-            <div class="group {vendorError?'error':''}">
-                <label for="vendor">Vendor Name</label>
-                <input id="vendor" name="vendor" list="vendors" autocomplete="off" placeholder="Vendor Name" on:change={(e)=>{setVendorId(e)}}/>
-                <datalist id="vendors">
-                    {#each data.vendors as vendor}
-                    <option value="{vendor.name}">{vendor.name}</option>
+            <div class="group {customerError?'error':''}">
+                <label for="customer">Customer Name</label>
+                <input type="text" name="customer" id="customer" list="customers" placeholder="Customer Name" on:change={(e)=>{setCustomerId(e)}}>
+                <datalist id="customers">
+                    {#each data.customers as customer (customer.id)}
+                        <option value="{customer.name}">{customer.name}</option>
                     {/each}
                 </datalist>
             </div>
@@ -172,15 +173,15 @@
             </div>
             {#each rows as row (row.sr)}
             {#key rows && data}    
-                <div class="row {rowErrorList.includes(row.sr)?'error':''}">
-                    <button on:click={()=>{removeRow(row.sr)}}>{row.sr}</button>
-                    <input type="text" name="item-name" id="item-name" placeholder="Item Name" value="{row.name}" list="items" on:change={(e)=>{setUnit(e, row)}}>
-                    <datalist id="items">
-                        {#each data.inventory as item}
+            <div class="row {rowErrorList.includes(row.sr)?'error':''}">
+                <button on:click={()=>{removeRow(row.sr)}}>{row.sr}</button>
+                <input type="text" name="item-name" id="item-name" placeholder="Item Name" value="{row.name}" list="items" on:change={(e)=>{setUnit(e, row)}}>
+                <datalist id="items">
+                    {#each items as item}
                         <option value="{item.name}">{item.name}</option>
-                        {/each}
-                    </datalist>
-                    <span>{row.unit}</span>
+                    {/each}
+                </datalist>
+                <span>{row.unit}</span>
                     <input type="text" name="price" id="price" placeholder="₹ 0.00" value="{row.price}" on:change={
                         (e)=>{
                                 row.price = parseFloat(e.target.value).toFixed(2)
@@ -215,12 +216,12 @@
                         ((Number(row.price)*Number(row.quantity)) + Number(row.gst_amount) - Number(row.discount_amount)).toFixed(2)   
                     }" disabled>
                 </div>
+                {/key}
+                {/each}
+                <button on:click={addRow} class="add">+ Add Item</button>
+            </div>
             {/key}
-            {/each}
-            <button on:click={addRow} class="add">+ Add Item</button>
         </div>
-        {/key}
-    </div>
 </main>
 
 <style>
@@ -269,13 +270,13 @@
         border-radius: var(--border-radius);
         box-shadow: var(--box-shadow-strong);
     }
-    .invoice .purchase-info {
+    .invoice .sales-info {
         width: 100%;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
     }
-    .invoice .purchase-info .group {
+    .invoice .sales-info .group {
         position: relative;
         width: 100%;
         height: 100%;
@@ -288,7 +289,7 @@
         box-shadow: var(--box-shadow-strong);
         border-radius: var(--border-radius);
     }
-    .invoice .purchase-info .group label {
+    .invoice .sales-info .group label {
         font-size: 1.2rem;
         font-weight: 600;
         color: var(--button-background);
@@ -319,7 +320,7 @@
     }
     .items .row input,
     .items .row span {
-        padding: 0.2rem 1rem;
+        padding: 0 1rem;
         font-size: 0.9rem;
     }
     .items .head span,

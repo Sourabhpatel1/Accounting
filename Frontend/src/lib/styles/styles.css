@@ -64,6 +64,7 @@
     --color-accent: #9656a1;
     --color-success: rgb(50, 114, 50);
     --color-danger: rgb(192, 14, 53);
+    --color-warning: rgb(221, 156, 36);
     --box-shadow-light: 0 0 5px 0 rgba(0 0 0 / 0.3);
     --box-shadow-medium: 0 0 10px 0 rgba(0 0 0 / 0.5);
     --box-shadow-strong: 0 0 15px 0 rgba(0 0 0 / 0.7);

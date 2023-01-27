@@ -14,11 +14,21 @@ def add_new_customer(customer:CustomerRequest, session:Session=Depends(get_sessi
             status_code=403,
             detail = f"Customer with name '{customer.name}' already exists."
         )
-    new_customer_account = Accounts(name=customer.name, primary_account_id=3)
+    new_customer_account = Accounts(name=customer.name, group_account_id=5)
     session.add(new_customer_account)
-    session.commit()
-    session.refresh(new_customer_account)
-    new_customer = Customers.from_orm(customer, update={'account_id':new_customer_account.id, 'account':new_customer_account})
+    new_customer = Customers(
+        name=customer.name,
+        email=customer.email,
+        phone=customer.phone,
+        country_code=customer.country_code,
+        country=customer.country,
+        state=customer.state,
+        address=customer.address,
+        postal_code=customer.postal_code,
+        gst=customer.gst,
+        account_id=new_customer_account.id,
+        account=new_customer_account
+    )
     session.add(new_customer)
     session.commit()
     session.refresh(new_customer)

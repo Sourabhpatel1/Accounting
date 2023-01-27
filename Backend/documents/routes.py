@@ -737,7 +737,30 @@ def read_purchase_invoice_by_id(id:int, session:Session=Depends(get_session)):
 
 @doc_route.get("/sales")
 def read_all_sales_invoices(session:Session=Depends(get_session)):
-    return session.exec(select(SalesInvoices)).all()
+    sales_invoices =  session.exec(select(SalesInvoices)).all()
+    invoices = []
+    for invoice in sales_invoices:
+        new_invoice = {
+            'invoice' : invoice,
+            'items' : [
+                {
+                    'item_name' :item.inventory.name, 
+                    'price' : item.price, 
+                    'quantity' : item.quantity, 
+                    'unit': item.inventory.unit.name,
+                    'discount_rate' : item.discount_rate,
+                    'discount_amount' : item.discount_amount,
+                    'gst_rate' : item.gst_rate,
+                    'gst_amount' : item.gst_amount,
+                    'total' : item.total
+                    } for item in invoice.line_items],
+            'dr_entries' : invoice.dr_entries,
+            'cr_entries' : invoice.cr_entries,
+            'amount' : sum([((item.price*item.quantity)-item.discount_amount+item.gst_amount) for item in invoice.line_items]),
+            'transaction_type' : invoice.transaction_type.name
+        }
+        invoices.append(new_invoice)
+    return invoices
 
 @doc_route.get("/sales/{id}")
 def read_sales_invoice_by_id(id:int, session:Session=Depends(get_session)):

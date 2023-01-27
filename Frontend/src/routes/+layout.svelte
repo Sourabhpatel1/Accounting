@@ -31,6 +31,9 @@
             <button class="{currentPage === '/sales'?'active':''}">
                 <a href="/sales"><i class='bx bxs-store-alt' ></i> Sales</a>
             </button>
+            <button class="{currentPage==='/parties'?'active':''}">
+                <a href="/parties"><i class='bx bxs-user-detail'></i> Parties</a>
+            </button>
             <button class="{currentPage === '/inventory'?'active':''}">
                 <a href="/inventory"><i class='bx bxs-box' ></i> Inventory</a>
             </button>
@@ -87,8 +90,8 @@
     nav .tabs,
     nav .footer {
         width: 100%;
-        margin-top: 1rem;
-        padding: 4rem 1rem;
+        margin-top: 0.5rem;
+        padding: 2rem 1rem;
         display: flex;
         flex-direction: column;
         align-items: center;

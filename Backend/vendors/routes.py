@@ -16,11 +16,21 @@ def add_new_vendor(vendor:VendorRequest, session:Session=Depends(get_session)):
             status_code=403,
             detail=f"Vendor with name {vendor.name} already exists in the database, please try a diffrent name."
         )
-    new_vendor_account = Accounts(name=vendor.name, primary_account_id=2)
+    new_vendor_account = Accounts(name=vendor.name, group_account_id=3)
     session.add(new_vendor_account)
-    session.commit()
-    session.refresh(new_vendor_account)
-    new_vendor = Vendors.from_orm(vendor, update={'account_id':new_vendor_account.id, 'account':new_vendor_account})
+    new_vendor = Vendors(
+        name=vendor.name,
+        email=vendor.email,
+        phone=vendor.phone,
+        country_code=vendor.country_code,
+        address=vendor.address,
+        state=vendor.state,
+        country=vendor.country,
+        postal_code=vendor.postal_code,
+        account_id=new_vendor_account.id,
+        account=new_vendor_account,
+        gst=vendor.gst
+    )
     session.add(new_vendor)
     session.commit()
     session.refresh(new_vendor)
