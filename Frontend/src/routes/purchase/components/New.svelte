@@ -5,7 +5,7 @@
 
     export let data;
 
-    let vendorId;
+    let vendorId = null;
     let transactionType;
     let itemId
     let today = new Date().toJSON().slice(0,10);
@@ -72,6 +72,7 @@
             dateError = true;
         }
         if (!vendorId) {
+            if(transactionType === 3)
             vendorError = true;
         }
         if (!transactionType) {

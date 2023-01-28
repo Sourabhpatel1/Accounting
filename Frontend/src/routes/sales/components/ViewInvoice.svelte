@@ -1,7 +1,19 @@
 <script>
+    import Items from "../../../lib/components/Items.svelte";
+    import Entries from "../../../lib/components/Entries.svelte";
     import { createEventDispatcher } from "svelte";
     
     export let invoice;
+    export let accounts;
+    export let customers;
+
+    let customerId = invoice.invoice.customer_id
+
+    let customerName = customers.filter(cus=>{
+        return cus.id === customerId
+    })[0].name
+
+    let viewing = 'items'
 
     const dispatch = createEventDispatcher()
 
@@ -12,65 +24,45 @@
         <div class="doc-info">
             <div class="header">
                 <span>Invoice #</span>
-                <hr>
                 <span>{invoice.invoice.id}</span>
             </div>
-            <div class="group">
-                <span>Invoice Type</span>
-                <hr>
-                <span class="value">{invoice.invoice.doc_type}</span>
-            </div>
-            <div class="group">
-                <span>Invoice Date</span>
-                <hr>
-                <span class="value">{invoice.invoice.doc_date}</span>
-            </div>
-            <div class="group">
-                <span>Invoice Amount</span>
-                <hr>
-                <span class="value">₹ {parseFloat(invoice.amount).toFixed(2)}</span>
-            </div>
-            <div class="group">
-                <span>Transaction Type </span>
-                <hr>
-                <span class="value">{invoice.transaction_type} Sale</span>
+            <div class="groups">
+                <div class="group">
+                    <span>Invoice Type</span>
+                    <hr>
+                    <span class="value">{invoice.invoice.doc_type}</span>
+                </div>
+                <div class="group">
+                    <span>Party Name</span>
+                    <hr>
+                    <span>{customerName?customerName:''}</span>
+                </div>
+                <div class="group">
+                    <span>Invoice Date</span>
+                    <hr>
+                    <span class="value">{invoice.invoice.doc_date}</span>
+                </div>
+                <div class="group">
+                    <span>Invoice Amount</span>
+                    <hr>
+                    <span class="value">₹ {parseFloat(invoice.amount).toFixed(2)}</span>
+                </div>
+                <div class="group">
+                    <span>Transaction Type </span>
+                    <hr>
+                    <span class="value">{invoice.transaction_type} Sale</span>
+                </div>
             </div>
         </div>
         <div class="entry-info">
-            <span>Items</span>
+            <button class="{viewing==='items'?'active':''}" on:click={()=>{viewing = 'items'}}>Items</button>
+            <button class="{viewing==='entries'?'active':''}" on:click={()=>{viewing='entries'}}>Entries</button>
         </div>
-        <div class="entries">
-            <div class="head">
-                <span>#</span>
-                <span>Name</span>
-                <span>Unit</span>
-                <span>Price</span>
-                <span>Quantity</span>
-                <span>Disc(%)</span>
-                <span>Disc(₹)</span>
-                <span>GST(%)</span>
-                <span>GST(₹)</span>
-                <span>Total</span>
-            </div>
-            {#each invoice.items as item, i (i)}
-                <div class="row">
-                    <span>{i+1}</span>
-                    <span>{item.item_name}</span>
-                    <span>{item.unit}</span>
-                    <span>{item.price}</span>
-                    <span>{item.quantity}</span>
-                    <span>{item.discount_rate}</span>
-                    <span>{item.discount_amount}</span>
-                    <span>{item.gst_rate}</span>
-                    <span>{item.gst_amount}</span>
-                    <span>{+invoice.amount}</span>
-                </div>
-            {/each}
-            <div class="footer">
-                <span>Total</span>
-                <span>{parseFloat(invoice.amount).toFixed(2)}</span>
-            </div>
-        </div>
+        {#if viewing === 'items'}
+            <Items {invoice}/>
+        {:else if viewing === 'entries'}
+            <Entries {accounts} doc={invoice}/>
+        {/if}
         <div class="actions">
             <button>Cancel Document</button>
         </div>
@@ -79,7 +71,7 @@
 </main>
 
 <style>
-    main {
+   main {
         position: fixed;
         top: 50%;
         left: 50%;
@@ -98,26 +90,47 @@
     }
     .doc {
         position: relative;
-        width: 90%;
+        width: 95%;
         height: 90%;
         background: var(--color-background);
         box-shadow: var(--box-shadow-strong);
         border-radius: var(--border-radius);
-        padding: 1rem;
+        padding: 0.5rem;
     }
     .doc-info {
-        width: 80%;
+        width: 95%;
         margin: auto;
         padding: 1rem;
-        margin-top: 50px;
+        margin-top: 10px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 2rem;
+        gap: 0.2rem;
         box-shadow: var(--box-shadow-strong);
         border-radius: var(--border-radius);
     }
-    .doc .doc-info .header,
+    .doc-info .header {
+        width: 100%;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .doc-info .header span {
+        padding: 0.5rem 1rem;
+        background: var(--button-text);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow-strong);
+    }
+    .groups {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 10px;
+    }
     .doc-info .group {
         width: 25%;
         padding: 0.5rem 2rem;
@@ -136,9 +149,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        gap: 1rem;
         margin: 10px 0px;
     }
-    .doc .entry-info span {
+    .doc .entry-info button {
         width: 20%;
         padding: 0.5rem 2rem;
         text-align: center;
@@ -149,59 +163,14 @@
         box-shadow: var(--box-shadow-strong);
         border-radius: var(--border-radius);
     }
+    .doc .entry-info button.active {
+        background: var(--color-success);
+        color: var(--button-background);
+    }
     .doc .doc-info .header span,
     .doc .doc-info .group span {
         font-size: 1.2rem;
         font-weight: 600;
-    }
-    .doc .entries {
-        position: relative;
-        width: 85%;
-        max-height: 480px;
-        min-height: 180px;
-        margin-inline: auto;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
-        gap: 10px;
-        overflow: scroll;
-    }
-    .doc .entries .head,
-    .doc .entries .row {
-        width: 90%;
-        padding: 0.2rem 1rem;
-        margin: auto;
-        color: var(--button-background);
-        display: grid;
-        grid-template-columns: repeat(10, 1fr);
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow-strong);
-    }
-    .doc .entries .head {
-        position: sticky;
-        top: 0px;
-        background: var(--nav-background);
-    }
-    .doc .entries .row {
-        background: var(--button-text);
-    }
-    .doc .entries .footer {
-        position: sticky;
-        bottom: 0;
-        width: 90%;
-        padding: 0.3rem 1rem;
-        margin: auto;
-        margin-top: 0px;
-        display: grid;
-        grid-template-columns: 9fr 1fr;
-        background: var(--nav-background);
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow-strong);
-    }
-    .doc .entries .footer span {
-        color: var(--button-background);
-        font-weight: 500;
     }
     .close {
         position: absolute;

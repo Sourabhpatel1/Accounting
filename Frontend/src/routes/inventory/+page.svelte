@@ -5,6 +5,22 @@
     export let data
     
     let current = 'item'
+    let saveItem;
+
+    const refetchData = async ()=>{
+        const inventoryRes = await fetch('http://127.0.0.1:8000/inv/')
+        const unitRes = await fetch('http://127.0.0.1:8000/lookup/unit')
+        const typeRes = await fetch('http://127.0.0.1:8000/lookup/inventory')
+
+        if (inventoryRes.ok && unitRes.ok && typeRes.ok) {
+            data = {
+                'items' : await inventoryRes.json(),
+                'units' : await unitRes.json(),
+                'types' : await typeRes.json()
+            }
+        }
+    }
+
 </script>
 
 <main>
@@ -15,23 +31,25 @@
         </div>
         <div class="save">
             {#if current === 'add'}
-                <button>+Add Item</button>
+                <button on:click={saveItem}>+Add Item</button>
             {/if}
         </div>
     </nav>
     <div class="content">
+        {#key data}
         {#if current === 'item'}
             <View {data}/>
         {:else if current === 'add'}
-            <New {data}/>
+            <New {data} bind:saveItem={saveItem} on:save={refetchData}/>
         {/if}
+        {/key}
     </div>
 </main>
 
 <style>
     main {
         width: 100%;
-        height: 100%;
+        min-height: 100%;
         display: flex;
         flex-direction: column;
         align-items: flex-start;

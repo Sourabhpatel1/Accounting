@@ -29,7 +29,7 @@ class VendorRequest(SQLModel):
     state:str
     country:str
     postal_code:int
-    gst:str = Field(max_length=16)
+    gst:Optional[str] = Field(max_length=16)
 
 class VendorUpdate(SQLModel):
     email:Optional[str] = Field(unique=True)

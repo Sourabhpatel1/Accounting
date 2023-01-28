@@ -45,7 +45,7 @@
             {#if current === 'new'}
                 <New {data} bind:submitInvoice={save} on:save={()=>{refetchData()}}/>
             {:else}
-                <View invoices={data.invoices}/>
+                <View invoices={data.invoices} accounts={data.accounts} customers={data.customers}/>
             {/if}
         {/key}
     </div>

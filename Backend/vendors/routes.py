@@ -51,19 +51,18 @@ def read_vendor_by_id(id:int, session:Session=Depends(get_session)):
     return vendor
 
 @vendor_route.patch("/{id}")
-def update_vendor(vendor:VendorUpdate, session:Session=Depends(get_session)):
-    vendor = session.get(Vendors, id)
-    if not vendor:
+def update_vendor(vendor:VendorUpdate, id:int, session:Session=Depends(get_session)):
+    vendor_in_db = session.get(Vendors, id)
+    if not vendor_in_db:
         raise HTTPException(
             status_code=404,
             detail=f"Vendor with id {id} does not exist."
         )
     vendor_update_data = vendor.dict(exclude_unset=True)
     for key, value in vendor_update_data.items():
-        setattr(vendor, key, value)
-    
-    session.add(vendor)
+        setattr(vendor_in_db, key, value)
+    session.add(vendor_in_db)
     session.commit()
-    session.refresh(vendor)
-    return vendor
+    session.refresh(vendor_in_db)
+    return vendor_in_db
 

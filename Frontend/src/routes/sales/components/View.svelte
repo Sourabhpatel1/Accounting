@@ -10,8 +10,8 @@
     })
 
     export let invoices;
-
-    console.log(invoices)
+    export let accounts;
+    export let customers;
 
     let userInvoices = invoices.sort((a,b)=>{
         if (a.invoice.doc_date>b.invoice.doc_date){return 1}
@@ -22,6 +22,7 @@
     let rowHeader;
 
     let invoiceType;
+    let partyName;
     let startDate;
     let endDate;
     let invoiceToView;
@@ -36,6 +37,17 @@
     }
     const filter = ()=>{
         userInvoices = invoices
+        if (partyName) {
+            let customerId
+            try {
+                customerId = customers.filter(cus=>cus.name === partyName)[0].id
+            } catch (error) {
+                
+            } 
+            if (customerId) {
+                userInvoices = invoices.filter(inv=>inv.invoice.customer_id === customerId)
+            }
+        }
         if (startDate) {
             userInvoices = invoices.filter(inv=>{
                 return (inv.invoice.doc_date >= startDate)
@@ -58,7 +70,7 @@
     }
 </script>
 {#if viewinginvoice}
-    <ViewInvoice invoice={invoiceToView} on:close={()=>{viewinginvoice=false; invoiceToView=null}}/>
+    <ViewInvoice invoice={invoiceToView} {accounts} customers={customers} on:close={()=>{viewinginvoice=false; invoiceToView=null}}/>
 {/if}
 <main>
     <div class="filters">
@@ -67,16 +79,21 @@
                 <span>Filter Invoices</span>
             </div>
             <div class="group">
+                <label for="party">Party Name</label>
+                <input type="text" name="party" id="party" list="parties" on:keyup={filter} on:change={filter} bind:value={partyName}>
+                <datalist id="parties">
+                    {#each customers as party}
+                        <option value="{party.name}">{party.name}</option>
+                    {/each}
+                </datalist>
+            </div>
+            <div class="group">
                 <label for="start">Start Date</label>
-                <input type="date" name="start" id="start" bind:value={startDate}>
+                <input type="date" name="start" id="start" bind:value={startDate} on:change={filter}>
             </div>
             <div class="group">
                 <label for="end">End Date</label>
-                <input type="date" name="end" id="end" bind:value={endDate}>
-            </div>
-            <div class="group">
-                <i class='bx bx-filter' ></i>
-                <button on:click={filter}>Apply</button>
+                <input type="date" name="end" id="end" bind:value={endDate} on:change={filter}>
             </div>
         </div>
     </div>
@@ -158,14 +175,6 @@
         outline: 0;
         border-radius: var(--border-radius);
         box-shadow: var(--box-shadow-strong);
-    }
-    .filters .filter-types .group button {
-        width: 100%;
-        height: 40px;
-        box-shadow: var(--box-shadow-strong);
-    }
-    .filters .filter-types .group button:active {
-        transform: scale(0.98);
     }
     .cards {
         width: 90%;

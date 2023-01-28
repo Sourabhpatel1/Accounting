@@ -23,7 +23,9 @@ def read_all_inventory(session:Session=Depends(get_session)):
         {
             'item' : inventory,
             'stock' : [{
-                        'quantity' : item.stock.quantity,
+                        'quantity_stock' : item.stock.quantity,
+                        'quantity_purchased' : item.quantity,
+                        'price' : item.stock.price,
                         'date_purchased' : item.stock.date
                        } for item in inventory.purchase_line_items]
         } for inventory in inventories

@@ -5,7 +5,6 @@
 
     let current = 'customers';
     let editing = [];
-    let rowEditing = null;
     let adding = false;
     let addingTo = ''
     let parties;
@@ -22,7 +21,6 @@
         const inputs = row.querySelectorAll('input')
         if (!editing.includes(rowNum)) {
             editing = [...editing, rowNum];
-            rowEditing = rowNum;
             inputs.forEach((inp,i)=>{
                 inp.style.outline = 'solid 2px var(--button-background)';
                 inp.disabled = false;
@@ -37,9 +35,9 @@
                 parties=data.vendors
             }
             editing=editing.filter(num=>rowNum!==num);
-            inputs.forEach((inp,i)=>{
-                inp.style.outline = 'none';
-                inp.disabled = true;
+            inputs[0].parentNode.querySelectorAll('input').forEach(inp=>{
+                inp.style.disabled=true;
+                inp.style.outline=0
             })
         }
     }
@@ -50,7 +48,7 @@
             return fieldValue.includes(searchterm.toLowerCase())
         })
     }
-    const updateParty = (e, party)=>{
+    const updateParty = async (e, party, rowNum)=>{
         const row = e.target.parentNode.parentNode
         const inputs = row.querySelectorAll('input')
         let updatedValues = {}
@@ -83,12 +81,43 @@
                     break
             }
         })
+        let urlSuffix = current==="customers"?'/cust/'+party.id:current==='vendors'?'/ven/'+party.id:null
+        const partyRes = await fetch('http://127.0.0.1:8000'+urlSuffix, {
+            method:'PATCH',
+            mode:'cors',
+            headers:{
+                'Access-Control-Allow-Origin':'http://localhost:5173',
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({...updatedValues})
+        })
+        if (partyRes.ok) {
+            alert(`${party.name} has been updated successfully.`)
+            editing = []
+            refetchData()
+        } else {
+            let messageObj = await partyRes.json()
+            messageObj.detail.forEach(item=>{
+                alert(`${item.loc[1]} : ${item.msg}, Error : ${item.type}`)
+            })
+        }
+    }
+    const refetchData = async ()=>{
+        const customerRes = await fetch('http://127.0.0.1:8000/cust/all')
+        const vendorRes = await fetch('http://127.0.0.1:8000/ven')
+        if (customerRes.ok && vendorRes.ok) {
+            data = {
+                customers : await customerRes.json(),
+                vendors : await vendorRes.json()
+            }
+        }
     }
 </script>
+{#key data}
 {#if addingTo == 'customers' && adding}
-    <New tab={current} on:close={()=>{addingTo='';adding=false}}/>
+    <New tab={current} on:close={()=>{addingTo='';adding=false}} on:save={()=>{refetchData()}}/>
 {:else if addingTo === 'vendors' && adding}
-    <New tab={current} on:close={()=>{addingTo='';adding=false}}/>         
+    <New tab={current} on:close={()=>{addingTo='';adding=false}} on:save={()=>{refetchData()}}/>         
 {/if}
 <main>
     <nav>
@@ -98,7 +127,7 @@
         </div>
         <div class="save">
             {#if current === 'customers'}
-                <button on:click={()=>{addingTo = 'customers'; adding=true;}}>+ Add Customer</button>
+            <button on:click={()=>{addingTo = 'customers'; adding=true;}}>+ Add Customer</button>
             {:else}
                 <button on:click={()=>{addingTo = 'vendors'; adding=true;}}>+ Add Vendor</button> 
             {/if}
@@ -136,34 +165,35 @@
                 <span>GST No.</span>
                 <span>Balance</span>
             </div>
-            {#key current && parties}
+            {#key current}
             {#each parties as party, i (i)}
-                <div class="row" id="row-{i+1}">
-                    <div class="actions">
-                        {#if !editing.includes(i+1)}    
-                            <button on:click={()=>{edit(i+1)}} class="edit">{i+1}</button>
-                        {:else}
-                            <button class="save" on:click={(e)=>{updateParty(e, party)}}>Save</button>
-                            <button class="cancel" on:click={()=>{edit(i+1);}}>X</button>
-                        {/if}
-                    </div>
-                    <input name="name" value="{party.name}" disabled>
-                    <input name="email" value="{party.email}" disabled>
-                    <input name="country_code" value="{party.country_code}-{party.phone}" disabled>
-                    <div class="address">
-                        <input name="address" type="text" value="{party.address}" disabled>
-                        <input name="state" type="text" value="{party.state}" disabled>
-                        <input name="country" type="text" value="{party.country}" disabled>
-                        <input name="postal_code" type="text" value="{party.postal_code}" disabled>
-                    </div>
-                    <input name="gst" value="{party.gst}" disabled>
-                    <span>0.00</span>
+            <div class="row" id="row-{i+1}">
+                <div class="actions">
+                    {#if !editing.includes(i+1)}    
+                    <button on:click={()=>{edit(i+1)}} class="edit">{i+1}</button>
+                    {:else}
+                    <button class="save" on:click={(e)=>{updateParty(e, party, (i+1))}}>Save</button>
+                    <button class="cancel" on:click={()=>{edit(i+1);}}>X</button>
+                    {/if}
                 </div>
+                <input name="name" value="{party.name}" disabled>
+                <input name="email" value="{party.email}" disabled>
+                <input name="country_code" value="{party.country_code}-{party.phone}" disabled>
+                <div class="address">
+                    <input name="address" type="text" value="{party.address}" disabled>
+                    <input name="state" type="text" value="{party.state}" disabled>
+                    <input name="country" type="text" value="{party.country}" disabled>
+                    <input name="postal_code" type="text" value="{party.postal_code}" disabled>
+                </div>
+                <input name="gst" value="{party.gst}" disabled>
+                <span>0.00</span>
+            </div>
             {/each}
             {/key}
         </div>
     </div>
 </main>
+{/key}
 
 <style>
     main {

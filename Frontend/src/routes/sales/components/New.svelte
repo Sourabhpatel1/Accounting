@@ -5,7 +5,7 @@
 
     export let data;
 
-    let customerId;
+    let customerId = null;
     let transactionType;
     let itemId
     let today = new Date().toJSON().slice(0,10);
@@ -17,7 +17,6 @@
     let items = data.inventory.filter(inv=>{
         return inv.item.type_id == 1
     })
-    console.log(items)
     let fistRow = {
         sr : 1,
         name : '',
@@ -67,7 +66,6 @@
         rows = newRow
     }
     export const submitInvoice = async () => {
-        console.log(customerId)
         dateError = false;
         customerError = false;
         transactionTypeError = false;
@@ -76,7 +74,9 @@
             dateError = true;
         }
         if (!customerId) {
-            customerError = true;
+            if (transactionType === 3) {
+                customerError = true;
+            }
         }
         if (!transactionType) {
             transactionTypeError = true;
